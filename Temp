@@ -1,0 +1,31 @@
+ORFnum = 0
+for nt in range(p-1, len(seq), 3):
+    if seq[nt:nt+3] in startCodon:
+        print('Find ATG at position', nt)
+        for nt2 in range(nt+3, len(seq), 3):
+            if seq[nt2:nt2+3] in stopCodon:
+                print('find a ORF:', seq[nt:nt2+3], '\n')
+                ORFnum += 1
+print('Find', ORFnum, 'ORF(s) in reading frame', p)
+
+
+Seq2
+RF1 : {}
+RF3 : {}
+RF2 : {'1': 'ATGacagctTAG'}
+
+
+Seq3
+RF1 : {}
+RF3 : {'5': 'ATGCCCTAG'}
+RF2 : {}
+
+
+Seq1
+RF1 : {'3': 'ATGCCCTAG', '0': 'ATGATGCCCTAG'}
+RF3 : {}
+RF2 : {}
+
+Seq 1 : [['ATGATGCCCTAG', 'ATGCCCTAG'], [], []]
+Seq 2 : [[], ['ATGacagctTAG'], []]
+Seq 3 : [[], [], ['ATGCCCTAG']]

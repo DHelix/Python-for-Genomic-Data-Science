@@ -1,0 +1,108 @@
+#!/usr/local/bin/python
+
+'''
+import sys
+inputFileName = sys.argv[1]
+outputFileName = sys.argv[2]
+'''
+
+# Open input file
+# inputFileName = input('Enter input file name:')
+try:
+    # f = open(inputFileName, 'r')
+    # f = open('dna.example.fasta', 'r')
+    f = open('dna1.fasta', 'r')
+except IOError:
+    print('The file does not exist!')
+# f.seek(0)
+
+# Read sequences into a dictionary
+seqs = {}
+for line in f:
+    line = line.rstrip()
+    if line[0] == '>':
+        header = line.split()
+        name = header[0][1:]
+        seqs[name] = ''
+    else:
+        seqs[name] = seqs[name] + line
+
+# Print the total # of sequences.
+print('There are', len(seqs), 'sequences.')
+
+# Print the length of each sequence.
+# for name,seq in seqs.items():
+#    print(name,'\t', len(seq))
+
+# Find the longest length and print the identifier(s).
+print('\n')
+maxLen, maxKey = max((len(v), k) for k, v in seqs.items())
+print('The longest sequence is:', maxLen, 'nt')
+for k, v in seqs.items():
+    if len(v) == maxLen:
+        print(k, len(v))
+
+# Find the shortest length and print the identifier(s).
+print('\n')
+minLen, minKey = min((len(v), k) for k, v in seqs.items())
+print('The shortest sequence is:', minLen, 'nt')
+for k, v in seqs.items():
+    if len(v) == minLen:
+        print(k, len(v))
+
+# Define start and stop codons.
+print('\n')
+startCodon = {'ATG'}
+stopCodon = {'TAA', 'TAG', 'TGA'}
+
+p = 1
+seq = 'ATGATGCCCTAGcca'
+seqlist = ['ATGATGCCCTAGcca', 'aATGacagctTAGATGCC', 'aATGaATGCCCTAG']
+
+
+def findORF(p, seq):
+    ORFnum = 0
+    ORF = []
+    for nt in range(p - 1, len(seq), 3):
+        if seq[nt:nt + 3] in startCodon:
+            #            print('Find ATG at position', nt)
+            for nt2 in range(nt + 3, len(seq), 3):
+                if seq[nt2:nt2 + 3] in stopCodon:
+                    #                    print('find a ORF:', seq[nt:nt2+3])
+                    ORF.append(seq[nt:nt2 + 3])
+                    #                    print(ORFs)
+                    ORFnum += 1
+                #    print('Find', ORFnum, 'ORF(s) in reading frame', p)
+                #    print(ORFs)
+    return (ORF)
+
+
+def findORFinAllRF(seq):
+    ORFinAllRF = []
+    for p in range(1, 4):
+        ORFinAllRF.append(findORF(p, seq))
+    return (ORFinAllRF)
+
+
+ORFinAllRF = findORFinAllRF(seq)
+
+
+# print('\nORFs in all reading frame:',ORFinAllRF)
+
+def findORFinAllRFinFile(seqlist):
+    allOFR = []
+    for i in range(0, len(seqlist)):
+        allOFR.append(findORFinAllRF(seqlist[i]))
+    return (allOFR)
+
+
+allORF = findORFinAllRFinFile(seqlist)
+# print('\nAll ORFs in all reading frame from the input file:', allORF)
+
+for i in range(len(seqlist)):
+    print('Seq', i + 1, ':', allORF[i])
+
+print(max(allORF, key=len))
+
+# Close input file
+f.close()
